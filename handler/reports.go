@@ -537,6 +537,55 @@ func (h *Handler) GetMsgs(c echo.Context) error {
 	return c.JSON(http.StatusOK, msgs)
 }
 
+func (h *Handler) GetAreaOrder(c echo.Context) error {
+	type Req struct {
+		Area   int
+		Serial int
+	}
+
+	req := new(Req)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	var resp []model.UndestributedDoc
+
+	rows, err := h.db.Raw("EXEC GetAreaOrder @Area = ? , @Serial = ? ", req.Area, req.Serial).Rows()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var rec model.UndestributedDoc
+		err = rows.Scan(&rec.BonSerial, &rec.DocNo, &rec.AccountCode, &rec.AccountName, &rec.AccountAddress, &rec.AccountArea)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
+		resp = append(resp, rec)
+	}
+	return c.JSON(http.StatusOK, resp)
+}
+func (h *Handler) GetUndestributedDoc(c echo.Context) error {
+	var rec model.UndestributedDoc
+	var resp []model.UndestributedDoc
+
+	err := h.db.Raw("EXEC GetUndistributeDoc @BCode = ? ", c.Param("bcode")).Row().Scan(
+		&rec.BonSerial,
+		&rec.DocNo,
+		&rec.AccountCode,
+		&rec.AccountName,
+		&rec.AccountAddress,
+		&rec.AccountArea,
+		&rec.AreaName,
+		&rec.BonCount,
+	)
+	resp = append(resp, rec)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, resp)
+}
+
 func (h *Handler) ReadMsgs(c echo.Context) error {
 
 	req := new(model.GetMsgsRequest)
@@ -595,7 +644,7 @@ func (h *Handler) GetEmp(c echo.Context) error {
 	defer rows.Close()
 	for rows.Next() {
 		var item model.Emp
-		err = rows.Scan(&item.EmpName, &item.EmpPassword, &item.EmpCode, &item.SecLevel)
+		err = rows.Scan(&item.EmpName, &item.EmpPassword, &item.EmpCode, &item.SecLevel, &item.FixEmpStore)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
@@ -603,6 +652,24 @@ func (h *Handler) GetEmp(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, employee)
+}
+
+func (h *Handler) UpdateDriver(c echo.Context) error {
+	type Req struct {
+		BonSerial  string
+		DriverCode int
+	}
+	req := new(Req)
+	if err := c.Bind(req); err != nil {
+		return err
+	}
+	rows, err := h.db.Raw("EXEC Stktr03UpdateDriver @BonSerial = ? , @DriverCode = ? ", req.BonSerial, req.DriverCode).Rows()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	defer rows.Close()
+
+	return c.JSON(http.StatusOK, "updated")
 }
 
 func (h *Handler) GetPrepareDoc(c echo.Context) error {

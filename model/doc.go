@@ -12,6 +12,16 @@ type UpdatePrepareReq struct {
 	HSerial int
 	EmpCode int
 }
+type UndestributedDoc struct {
+	BonSerial      int
+	DocNo          string
+	AccountCode    int
+	AccountName    string
+	AccountAddress string
+	AccountArea    int
+	AreaName       string
+	BonCount       int
+}
 type GetMsgsRequest struct {
 	EmpSerial int
 	BonSerial int

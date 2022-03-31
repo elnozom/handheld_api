@@ -9,4 +9,5 @@ type Emp struct {
 	EmpCode     int
 	EmpPassword string
 	SecLevel    int
+	FixEmpStore int
 }
