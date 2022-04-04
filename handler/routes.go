@@ -43,5 +43,6 @@ func (h *Handler) Register(v1 *echo.Group) {
 	v1.POST("/products/info", h.ProductCreateInitial)
 	v1.GET("/products/maxCode/:group", h.ProductGetMaxCode)
 	v1.GET("/products/types/:group", h.ItemTypeByGroup)
+	v1.GET("/products/find", h.ProductFindByCode)
 
 }

@@ -18,6 +18,8 @@ type ProductCreateInitialReq struct {
 	POSPP              float64
 	Ratio1             float64
 	Ratio2             float64
+	Percent1           int
+	Percen2            int
 }
 
 type GroupCodeAndMaxItem struct {

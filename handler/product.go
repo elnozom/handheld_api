@@ -21,6 +21,34 @@ func (h *Handler) ProductCreateInitial(c echo.Context) error {
 	return c.JSON(http.StatusOK, resp)
 }
 
+func (h *Handler) ProductFindByCode(c echo.Context) error {
+
+	var item model.ProductCreateInitialReq
+	err := h.db.Raw("EXEC StkMs01FindByCode  @ItemCode = ?, @GroupCode = ?", c.FormValue("ItemCode"), c.FormValue("GroupCode")).Row().Scan(
+		&item.ItemCode,
+		&item.GroupCode,
+		&item.BarCode,
+		&item.Name,
+		&item.ItemTypeID,
+		&item.MinorPerMajor,
+		&item.AccountSerial,
+		&item.ActiveItem,
+		&item.ItemHaveSerial,
+		&item.MasterItem,
+		&item.ItemHaveAntherUint,
+		&item.StoreCode,
+		&item.LastBuyPrice,
+		&item.POSTP,
+		&item.POSPP,
+		&item.Ratio1,
+		&item.Ratio2,
+	)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, item)
+}
+
 func (h *Handler) ProductGetMaxCode(c echo.Context) error {
 	var resp model.GroupCodeAndMaxItem
 	err := h.db.Raw("EXEC StkMs01MacItemCodeByGroup @GroupCode = ?", c.Param("group")).Row().Scan(&resp.MaxCode, &resp.GroupName)

@@ -29,3 +29,36 @@ AS
 BEGIN 
 SELECT ItemTypeID , ItemTypeName  FROM ItemType it WHERE GroupCode  = @GroupCode
 END
+
+
+
+
+
+    GO
+    ALTER PROC StkMs01FindByCode(@ItemCode SMALLINT , @GroupCode TINYINT)
+    AS
+    BEGIN 
+        SELECT 
+        TOP(1)
+            ItemCode ,
+            GroupCode ,
+            BarCode ,
+            POSName ,
+            ItemTypeID ,
+            MinorPerMajor ,
+            AccountSerial ,
+            ActiveItem ,
+            ItemHaveSerial ,
+            MasterItem ,
+            ItemHaveAntherUint,
+            StoreCode,
+            LastBuyPrice,
+            POSTP,
+            POSPP,
+            Ratio1,
+            Ratio2
+            FROM StkMs01 
+            JOIN StkMs02 ON StkMs01.Serial = StkMs02.ItemSerial
+            WHERE GroupCode = @GroupCode AND ItemCode = @ItemCode
+    END
+
