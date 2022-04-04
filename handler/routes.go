@@ -5,9 +5,13 @@ import (
 )
 
 func (h *Handler) Register(v1 *echo.Group) {
-
+	// cashtray
 	cashtry := v1.Group("/cashtry")
 	cashtry.GET("/stores", h.CashTryStores)
+	cashtry.GET("/paused", h.PausedCashTry)
+	cashtry.GET("/find/:serial", h.CashTryFind)
+	cashtry.POST("/close", h.CashTryClose)
+
 	v1.GET("/employee", h.GetEmp)
 	v1.GET("/doc/undestributed/:bcode", h.GetUndestributedDoc)
 	v1.GET("/doc/area", h.GetAreaOrder)
