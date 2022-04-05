@@ -1,7 +1,7 @@
 USE mcstree
 
 GO
-CREATE PROC CashtrayClose(
+ALTER PROC CashtrayClose(
     @Serial int,
     @Exceed real,
     @Shortage real,
@@ -9,6 +9,6 @@ CREATE PROC CashtrayClose(
 )
 AS
 BEGIN 
-    UPDATE CashTry SET Exceed = @Exceed ,Shortage = @Shortage, CasherMoney = @Amount WHERE "Serial" = @Serial
+    UPDATE CashTry SET Exceed = @Exceed ,Shortage = @Shortage, CasherMoney = @Amount , CloseData = GETDATE()  WHERE "Serial" = @Serial
     SELECT @Serial  "serial";
 END

@@ -83,7 +83,132 @@ VALUES   (@ItemSerial,@StoreCode,@LastBuyPrice,@LastBuyPrice,@POSTP,@POSPP,@Rati
 SELECT @ItemSerial serial
 END
 
+GO
+ALTER PROCEDURE StkMs01FindByCode (@BCode  NVARCHAR(20)= null ,@StoreCode int, @Name NVARCHAR(50) = null )
+AS
 
+    DECLARE @m_Code  FLOAT
+	DECLARE @GC INT
+	DECLARE @IC INT
+	DECLARE @ExpireCode NVARCHAR(20)
+	DECLARE @Code NVARCHAR(20) 
+	DECLARE @ExpireD NVARCHAR(20)
+
+
+
+if @Name is not null
+	BEGIN 
+		select  ItemCode ,
+				GroupCode ,
+				BarCode ,
+				POSName ,
+				ItemTypeID ,
+				MinorPerMajor ,
+				AccountSerial ,
+				ActiveItem ,
+				ItemHaveSerial ,
+				MasterItem ,
+				ItemHaveAntherUint,
+				StoreCode,
+				LastBuyPrice,
+				POSTP,
+				POSPP,
+				Ratio1,
+				Ratio2
+		from StkMs01
+		inner join StkMs02 on StkMs01.Serial = StkMs02 .ItemSerial 
+		where ItemName like ( '%' + @Name +'%') and StkMs02.StoreCode = @StoreCode
+	end
+else if Len(@BCode) <= 6 and @BCode is not null
+ begin
+ SET @m_Code = CAST( @BCode AS INT)
+			set  @GC = right(format (@m_Code ,'000000') ,2)
+		    set  @IC = Left(format (@m_Code ,'000000') ,4)
+			select  ItemCode ,
+        GroupCode ,
+        BarCode ,
+        POSName ,
+        ItemTypeID ,
+        MinorPerMajor ,
+        AccountSerial ,
+        ActiveItem ,
+        ItemHaveSerial ,
+        MasterItem ,
+        ItemHaveAntherUint,
+        StoreCode,
+        LastBuyPrice,
+        POSTP,
+        POSPP,
+        Ratio1,
+        Ratio2
+			from StkMs01
+			inner join StkMs02 on StkMs01.Serial = StkMs02 .ItemSerial 
+			where (ItemCode = @IC and StkMs01.GroupCode = @GC) and StkMs02.StoreCode = @StoreCode
+			end 
+else
+begin
+IF Left(@BCode, 1) = 2 And Len(@BCode) = 11 
+begin
+				set @ExpireCode =  SUBSTRing (@BCode,2,10)
+		
+                SET  @Code = Left(@ExpireCode, 6)
+                SET  @ExpireD = Right(@ExpireCode, 4)
+		    SET @m_Code = CAST( @code AS INT)
+		    set  @GC = right(format (@m_Code ,'000000') ,2)
+		    set  @IC = Left(format (@m_Code ,'000000') ,4)
+            select  
+			ItemCode ,
+        GroupCode ,
+        BarCode ,
+        POSName ,
+        ItemTypeID ,
+        MinorPerMajor ,
+        AccountSerial ,
+        ActiveItem ,
+        ItemHaveSerial ,
+        MasterItem ,
+        ItemHaveAntherUint,
+        StoreCode,
+        LastBuyPrice,
+        POSTP,
+        POSPP,
+        Ratio1,
+        Ratio2
+			from StkMs01
+			inner join StkMs02 on StkMs01.Serial = StkMs02 .ItemSerial 
+			where (ItemCode = @IC and StkMs01.GroupCode = @GC) and StkMs02.StoreCode = @StoreCode 
+	end 		
+			 
+
+ELSE	
+
+	begin
+			select  ItemCode ,
+        GroupCode ,
+        BarCode ,
+        POSName ,
+        ItemTypeID ,
+        MinorPerMajor ,
+        AccountSerial ,
+        ActiveItem ,
+        ItemHaveSerial ,
+        MasterItem ,
+        ItemHaveAntherUint,
+        StoreCode,
+        LastBuyPrice,
+        POSTP,
+        POSPP,
+        Ratio1,
+        Ratio2
+			from StkMs01
+			INNER JOIN StkMs02 on StkMs01 .Serial = StkMs02.ItemSerial 
+			left outer join BarCode on StkMs01.Serial = BarCode.ItemSerial 
+			where 
+			(BarCode = @BCode or BarCode.ItemBarCode = @BCode) and StkMs02.StoreCode = @StoreCode
+
+    end 
+ 
+ end
 GO
 ALTER PROC StkMs01MacItemCodeByGroup(@GroupCode TINYINT)
 AS

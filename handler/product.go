@@ -24,7 +24,7 @@ func (h *Handler) ProductCreateInitial(c echo.Context) error {
 func (h *Handler) ProductFindByCode(c echo.Context) error {
 
 	var item model.ProductCreateInitialReq
-	err := h.db.Raw("EXEC StkMs01FindByCode  @ItemCode = ?, @GroupCode = ?", c.FormValue("ItemCode"), c.FormValue("GroupCode")).Row().Scan(
+	err := h.db.Raw("EXEC StkMs01FindByCode  @BCode = ?, @StoreCode = ? , @Name = ?", c.FormValue("BCode"), c.FormValue("StoreCode"), c.FormValue("Name")).Row().Scan(
 		&item.ItemCode,
 		&item.GroupCode,
 		&item.BarCode,
