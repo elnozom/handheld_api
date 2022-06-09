@@ -13,6 +13,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	cashtry.POST("/close", h.CashTryClose)
 
 	v1.GET("/employee", h.GetEmp)
+	v1.POST("/login", h.Login)
+
 	v1.GET("/doc/undestributed/:bcode", h.GetUndestributedDoc)
 	v1.GET("/doc/area", h.GetAreaOrder)
 
@@ -23,8 +25,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	v1.POST("/invoice/close", h.ClosePrepareDoc)
 	v1.POST("/invoice", h.UpdatePrepareItem)
 	v1.POST("/raseed", h.RaseedInvInsert)
-	v1.POST("/devices/check", h.DevicesCheck)
-	v1.POST("/devices/insert", h.DevicesInsert)
+
 	v1.POST("/orders/close", h.CloseOrder)
 	v1.GET("/msgs", h.GetMsgs)
 	v1.PUT("/msgs/read", h.ReadMsgs)
@@ -42,6 +43,21 @@ func (h *Handler) Register(v1 *echo.Group) {
 	v1.POST("/orders", h.InsertOrder)
 	v1.POST("/orders/item", h.InsertOrderItem)
 	v1.GET("/orders/items", h.GetOrderItems)
+
+	// devices order
+	devices := v1.Group("/devices")
+	devices.POST("/find", h.DeviceFind)
+	devices.POST("", h.DevicesCreate)
+
+	v1.POST("/devices/check", h.DevicesCheck)
+	v1.POST("/devices/insert", h.DevicesInsert)
+	// direct order
+	direct := v1.Group("/direct")
+	direct.POST("", h.DirectOrderInsert)
+	direct.DELETE("/:id", h.DirectOrderItemsDelete)
+	direct.GET("", h.DirectOrdersList)
+	direct.GET("/:id", h.DirectOrderItemsList)
+	direct.GET("/print/:id", h.DirectOrderPrintList)
 
 	// product
 	v1.POST("/products/info", h.ProductCreateInitial)

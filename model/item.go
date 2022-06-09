@@ -52,8 +52,11 @@ type DocItemsReq struct {
 type DocItem struct {
 	Serial        int
 	Qnt           float32
+	Price         float64
+	TotalCash     float64
 	Item_BarCode  int
 	MinorPerMajor int
+	ItemTotal     float64
 	ItemName      string
 	ByWeight      bool
 }

@@ -13,7 +13,7 @@ func (h *Handler) ProductCreateInitial(c echo.Context) error {
 		return err
 	}
 	var resp int
-	err := h.db.Raw("EXEC StkMs01CreateInitial  @ItemCode = ?, @GroupCode = ?, @BarCode = ?, @Name = ?, @MinorPerMajor = ?, @AccountSerial = ?, @ActiveItem = ?, @ItemTypeID = ?, @ItemHaveSerial = ?, @MasterItem = ?, @ItemHaveAntherUint = ?, @StoreCode = ?, @LastBuyPrice = ?, @POSTP = ?, @POSPP = ?, @Ratio1 = ?, @Ratio2 = ? ", req.ItemCode, req.GroupCode, req.BarCode, req.Name, req.MinorPerMajor, req.AccountSerial, req.ActiveItem, req.ItemTypeID, req.ItemHaveSerial, req.MasterItem, req.ItemHaveAntherUint, req.StoreCode, req.LastBuyPrice, req.POSTP, req.POSPP, req.Ratio1, req.Ratio2).Row().Scan(&resp)
+	err := h.db.Raw("EXEC StkMs01InsertUpdate  @ItemCode = ?, @GroupCode = ?, @BarCode = ?, @Name = ?, @MinorPerMajor = ?, @AccountSerial = ?, @ActiveItem = ?, @ItemTypeID = ?, @ItemHaveSerial = ?, @MasterItem = ?, @ItemHaveAntherUint = ?, @StoreCode = ?, @LastBuyPrice = ?, @POSTP = ?, @POSPP = ?, @Ratio1 = ?, @Ratio2 = ? , @Disc1 = ? ,@Disc2 = ? , @PriceBefore = ? ", req.ItemCode, req.GroupCode, req.BarCode, req.Name, req.MinorPerMajor, req.AccountSerial, req.ActiveItem, req.ItemTypeID, req.ItemHaveSerial, req.MasterItem, req.ItemHaveAntherUint, req.StoreCode, req.LastBuyPrice, req.POSTP, req.POSPP, req.Ratio1, req.Ratio2, req.Disc1, req.Disc2, req.PriceBefore).Row().Scan(&resp)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -22,7 +22,6 @@ func (h *Handler) ProductCreateInitial(c echo.Context) error {
 }
 
 func (h *Handler) ProductFindByCode(c echo.Context) error {
-
 	var item model.ProductCreateInitialReq
 	err := h.db.Raw("EXEC StkMs01FindByCode  @BCode = ?, @StoreCode = ? , @Name = ?", c.FormValue("BCode"), c.FormValue("StoreCode"), c.FormValue("Name")).Row().Scan(
 		&item.ItemCode,
@@ -38,8 +37,16 @@ func (h *Handler) ProductFindByCode(c echo.Context) error {
 		&item.ItemHaveAntherUint,
 		&item.StoreCode,
 		&item.LastBuyPrice,
+
+		&item.PriceBefore,
+		&item.Disc1,
+		&item.Disc2,
+		&item.Tax1,
+
 		&item.POSTP,
 		&item.POSPP,
+		&item.SupplierCode,
+		&item.SupplierName,
 		&item.Ratio1,
 		&item.Ratio2,
 	)
