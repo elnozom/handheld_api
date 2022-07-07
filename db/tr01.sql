@@ -3,7 +3,7 @@ USE MCSTREE
 
 
 GO
-CREATE PROCEDURE StkTr01ListItems (@Serial INT)
+ALTER PROCEDURE StkTr01ListItems (@Serial INT)
 AS
 BEGIN
     DECLARE @totalCash FLOAT
@@ -24,7 +24,7 @@ END
 
 
 GO
-CREATE PROCEDURE StkTr02Delete (@Serial INT)
+ALTER PROCEDURE StkTr02Delete (@Serial INT)
 AS
 BEGIN
     DELETE FROM StkTr02 WHERE Serial = @Serial
@@ -98,15 +98,13 @@ AS
             SELECT @HeadSerial headSerial
     END
 
-
 GO
-ALTER FUNCTION StkTr01GetMaxDocNo( @StoreCode INT) returns nvarchar(10)  
+ALTER FUNCTION StkTr01GetMaxDocNo( @StoreCode INT , @TrSerial INT) returns nvarchar(10)  
 AS  
 BEGIN 
-
-    DECLARE @DocNo INT
+	DECLARE @DocNo INT
     DECLARE @StoreLetter CHAR
-    SET @StoreLetter = (SELECT FixedChar FROM StoreCode WHERE StoreCode = 1)
+    SET @StoreLetter = (SELECT FixedChar FROM StoreCode WHERE StoreCode = @StoreCode)
     SET @DocNo = 
 		(SELECT TOP(1) CONVERT(INT, SUBSTRING(DocNo, 2, LEN(DocNo) - 1))  
 			FROM StkTr01 
