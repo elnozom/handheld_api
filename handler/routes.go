@@ -6,6 +6,7 @@ import (
 
 func (h *Handler) Register(v1 *echo.Group) {
 	// cashtray
+	v1.GET("/validate", h.Validate)
 	cashtry := v1.Group("/cashtry")
 	cashtry.GET("/stores", h.CashTryStores)
 	cashtry.GET("/paused", h.PausedCashTry)
@@ -13,6 +14,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	cashtry.POST("/close", h.CashTryClose)
 
 	v1.GET("/employee", h.GetEmp)
+	v1.GET("/permissions/:code", h.LoadPermissions)
 	v1.POST("/login", h.Login)
 
 	v1.GET("/doc/undestributed/:bcode", h.GetUndestributedDoc)
@@ -32,7 +34,7 @@ func (h *Handler) Register(v1 *echo.Group) {
 	v1.POST("/get-account", h.GetAccount)
 	v1.POST("/get-item", h.GetItem) // done
 	v1.POST("/get-doc", h.GetDocNo)
-	v1.POST("/get-doc-items", h.GetDocItems)
+	// v1.POST("/get-doc-items", h.GetDocItems)
 	v1.POST("/insert-item", h.InsertItem)
 	v1.POST("/delete-item", h.DeleteItem)
 	v1.POST("/get-docs", h.GetOpenDocs)
@@ -64,5 +66,8 @@ func (h *Handler) Register(v1 *echo.Group) {
 	v1.GET("/products/maxCode/:group", h.ProductGetMaxCode)
 	v1.GET("/products/types/:group", h.ItemTypeByGroup)
 	v1.GET("/products/find", h.ProductFindByCode)
+
+	// account transactions
+	v1.POST("/accounts/pay", h.AccountTransactionPay)
 
 }

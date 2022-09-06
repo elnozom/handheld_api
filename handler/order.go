@@ -4,6 +4,7 @@ import (
 	"hand_held/model"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -80,34 +81,52 @@ func (h *Handler) DirectOrdersList(c echo.Context) error {
 }
 
 func (h *Handler) DirectOrderPrintList(c echo.Context) error {
-	var resp []model.DirectOrderPrint
+	var resp model.PrintResponse
 	id, _ := strconv.Atoi(c.Param("id"))
 	rows, err := h.db.Raw("EXEC StkTr01PrintItemsBySerial  @Serial = ?", id).Rows()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	defer rows.Close()
+	var grandTotal float64
+	var wholeQntSum float64
+	var partQntSum float64
 	for rows.Next() {
 		var rec model.DirectOrderPrint
 		err := rows.Scan(
 			&rec.DocDate,
-			&rec.DocTime,
 			&rec.AccountName,
 			&rec.DocNo,
 			&rec.ItemName,
 			&rec.EmpName,
-			&rec.Qnt,
+			&rec.StoreName,
+			&rec.WholeQnt,
+			&rec.PartQnt,
 			&rec.MinorPerMajor,
 			&rec.Price,
 			&rec.TotalPrice,
 		)
-
+		grandTotal += rec.TotalPrice
+		wholeQntSum += rec.WholeQnt
+		partQntSum += rec.PartQnt
+		rec.ItemName = _truncateText(rec.ItemName, 30)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "can't scan the values : "+err.Error())
 		}
-		resp = append(resp, rec)
+		resp.Items = append(resp.Items, rec)
 	}
+	resp.Totals.GrandTotal = grandTotal
+	resp.Totals.WholeQnt = wholeQntSum
+	resp.Totals.PartQnt = partQntSum
+	resp.Info = *h.info
 	return c.JSON(http.StatusOK, resp)
+}
+
+func _truncateText(s string, max int) string {
+	if max > len(s) {
+		return s
+	}
+	return s[:strings.LastIndex(s[:max], " ")]
 }
 
 func (h *Handler) DirectOrderItemsList(c echo.Context) error {

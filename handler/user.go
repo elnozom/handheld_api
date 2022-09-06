@@ -3,6 +3,7 @@ package handler
 import (
 	"hand_held/model"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,5 +18,21 @@ func (h *Handler) Login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, resp)
+	permissions, err := h.permissionsRepo.LoadEmpPermissions(&req.Username)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, permissions)
+}
+
+func (h *Handler) LoadPermissions(c echo.Context) error {
+	code, err := strconv.Atoi(c.Param("code"))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	permissions, err := h.permissionsRepo.LoadEmpPermissions(&code)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, permissions)
 }

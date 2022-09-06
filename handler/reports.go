@@ -252,36 +252,38 @@ func (h *Handler) GetOpenPrepareDocs(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, OpenDocs)
 }
-func (h *Handler) GetDocItems(c echo.Context) error {
 
-	req := new(model.DocItemsReq)
-	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, "ERROR binding request")
-	}
-	var DocItems []model.DocItem
-	rows, err := h.db.Raw("EXEC GetSdItems @DevNo = ?, @TrSerial = ?,@StoreCode = ? , @DocNo = ?;", req.DevNo, req.TrSerial, req.StoreCode, req.DocNo).Rows()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var docItem model.DocItem
-		err = rows.Scan(
-			&docItem.Serial,
-			&docItem.Qnt,
-			&docItem.Item_BarCode,
-			&docItem.ItemName,
-			&docItem.MinorPerMajor,
-			&docItem.ByWeight,
-		)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "can't scan the values")
-		}
-		DocItems = append(DocItems, docItem)
-	}
+// func (h *Handler) GetDocItems(c echo.Context) error {
 
-	return c.JSON(http.StatusOK, DocItems)
-}
+// 	req := new(model.DocItemsReq)
+// 	if err := c.Bind(req); err != nil {
+// 		return c.JSON(http.StatusBadRequest, "ERROR binding request")
+// 	}
+// 	var DocItems []model.DocItem
+// 	rows, err := h.db.Raw("EXEC GetSdItems @DevNo = ?, @TrSerial = ?,@StoreCode = ? , @DocNo = ?;", req.DevNo, req.TrSerial, req.StoreCode, req.DocNo).Rows()
+// 	if err != nil {
+// 		return c.JSON(http.StatusInternalServerError, err)
+// 	}
+// 	defer rows.Close()
+// 	for rows.Next() {
+// 		var docItem model.DocItem
+// 		err = rows.Scan(
+// 			&docItem.Serial,
+// 			&docItem.WholeQnt,
+// 			&docItem.WholeQnt,
+// 			&docItem.Item_BarCode,
+// 			&docItem.ItemName,
+// 			&docItem.MinorPerMajor,
+// 			&docItem.ByWeight,
+// 		)
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, "can't scan the values")
+// 		}
+// 		DocItems = append(DocItems, docItem)
+// 	}
+
+// 	return c.JSON(http.StatusOK, DocItems)
+// }
 
 func (h *Handler) DeleteItem(c echo.Context) error {
 
@@ -436,23 +438,35 @@ func (h *Handler) CashTryStores(c echo.Context) error {
 }
 
 func (h *Handler) GetAccount(c echo.Context) error {
-
 	req := new(model.GetAccountRequest)
 	if err := c.Bind(req); err != nil {
 		return err
 	}
-	fmt.Println(req)
 
 	var accounts []model.Account
-	rows, err := h.db.Raw("EXEC GetAccount @Code = ?, @Name = ? , @Type = ?", req.Code, req.Name, req.Type).Rows()
+	rows, err := h.db.Raw("EXEC GetAccount @Code = ?, @Name = ? , @Type = ? , @Store = ?", req.Code, req.Name, req.Type, req.Store).Rows()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	defer rows.Close()
+
 	for rows.Next() {
 		var account model.Account
-		rows.Scan(&account.Serial, &account.AccountCode, &account.AccountName)
+		err = rows.Scan(&account.Serial, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err.Error())
+		}
 		accounts = append(accounts, account)
+	}
+	if rows.NextResultSet() {
+		for rows.Next() {
+			var account model.Account
+			err = rows.Scan(&account.Serial, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, err.Error())
+			}
+			accounts = append(accounts, account)
+		}
 	}
 
 	return c.JSON(http.StatusOK, accounts)

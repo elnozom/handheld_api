@@ -29,6 +29,7 @@ type InsertOrderItem struct {
 
 type InsertDirectOrderReq struct {
 	AccountSerial int
+	RaseedBefore  float64
 	EmpCode       int
 	StoreCode     int
 	StoreCode2    int
@@ -60,10 +61,23 @@ type DirectOrderPrint struct {
 	DocNo         string
 	ItemName      string
 	EmpName       string
-	Qnt           float64
+	StoreName     string
+	WholeQnt      float64
+	PartQnt       float64
 	MinorPerMajor int
 	Price         float64
 	TotalPrice    float64
+	GrandTotal    float64
+}
+type PrintTotals struct {
+	GrandTotal float64
+	WholeQnt   float64
+	PartQnt    float64
+}
+type PrintResponse struct {
+	Items  []DirectOrderPrint
+	Info   CompanyInfo
+	Totals PrintTotals
 }
 type ListDirectOrdersReq struct {
 	StoreCode    int    `query:"store"`
