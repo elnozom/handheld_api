@@ -27,6 +27,9 @@ type InsertOrderItem struct {
 	Price         float64
 }
 
+type ApplyDiscount struct {
+	Discount float64
+}
 type InsertDirectOrderReq struct {
 	AccountSerial int
 	RaseedBefore  float64
@@ -45,6 +48,8 @@ type InsertDirectOrderReq struct {
 
 type DirectOrder struct {
 	Serial        int
+	DocDate       string
+	Discount      float64
 	StoreCode     int
 	DocNo         string
 	AccountSerial int
@@ -54,33 +59,41 @@ type DirectOrder struct {
 	AccountCode   int
 }
 
-type DirectOrderPrint struct {
-	DocDate       string
-	DocTime       string
-	AccountName   string
-	DocNo         string
-	ItemName      string
-	EmpName       string
-	StoreName     string
-	WholeQnt      float64
-	PartQnt       float64
-	MinorPerMajor int
-	Price         float64
-	TotalPrice    float64
-	GrandTotal    float64
-}
-type PrintTotals struct {
-	GrandTotal float64
+type PrintItem struct {
+	ItemName   string
 	WholeQnt   float64
 	PartQnt    float64
+	Price      float64
+	Tax        float64
+	TotalPrice float64
+	GrandTotal float64
+	BarCode    string
+}
+type PrintHeader struct {
+	DocDate        string
+	Discount       float64
+	IsClosed       bool
+	AccountName    string
+	AccountTrn     string
+	AccountAddress string
+	DocNo          string
+	EmpName        string
+	StoreName      string
+	Total          float64
+	Tax            float64
+	SubTotal       float64
+	GrandTotal     float64
 }
 type PrintResponse struct {
-	Items  []DirectOrderPrint
+	Items  []PrintItem
+	Header PrintHeader
 	Info   CompanyInfo
-	Totals PrintTotals
 }
 type ListDirectOrdersReq struct {
-	StoreCode    int    `query:"store"`
-	TransSerial  int    `query:"trSerial"`
-	ComputerName string `query:"computer"`
+	StoreCode    int     `query:"store"`
+	TransSerial  int     `query:"trSerial"`
+	IsClosed     bool    `query:"isClosed"`
+	FromDate     *string `query:"fromDate"`
+	ToDate       *string `query:"toDate"`
+	ComputerName string  `query:"computer"`
 }

@@ -119,3 +119,36 @@ BEGIN
 END  
 
 
+
+GO
+ALTER PROCEDURE StkTr01List (
+    @TransSerial INT ,
+    @StoreCode INT ,
+    @ComputerName VARCHAR(200) ,
+    @isOpen BIT = 0,
+    @fromDate VARCHAR(20) = '' ,
+    @toDate VARCHAR(20) = '' 
+)
+AS
+BEGIN
+    SELECT 
+        o.Serial,
+        ISNULL(o.Discount , 0),
+        o.StoreCode ,
+        o.DocNo ,
+        isnull(o.AccountSerial ,0) , 
+        o.TransSerial, 
+        (SELECT SUM(CASE WHEN MinorPerMajor = 1000  THEN Qnt * Price  ELSE (Qnt * Price /  MinorPerMajor ) END) FROM StkTr02 WHERE HeadSerial = o.Serial),
+        isnull( a.AccountName ,'') ,
+        isnull(a.AccountCode ,0) 
+	FROM StkTr01 o 
+    LEFT JOIN 
+        AccMs01 a 
+        ON o.AccountSerial = a.Serial 
+	WHERE o.StoreCode = @StoreCode 
+    AND o.TransSerial = @TransSerial 
+	AND o.ComputerName = @ComputerName 
+    AND iSNULL(TotalCash ,0) = dbo.ISZERO(@isOpen ,TotalCash) 
+    AND o.DocDate >= ISNULL(@fromDate , o.DocDate )
+	AND o.DocDate <= ISNULL(@toDate , o.DocDate )
+END
