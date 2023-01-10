@@ -47,6 +47,9 @@ type DirectOrder struct {
 	Serial        int
 	StoreCode     int
 	DocNo         string
+	DocDate       string
+	Discount      float64
+	Total         float64
 	AccountSerial int
 	TotalCash     float64
 	TransSerial   int
@@ -80,7 +83,10 @@ type PrintResponse struct {
 	Totals PrintTotals
 }
 type ListDirectOrdersReq struct {
-	StoreCode    int    `query:"store"`
-	TransSerial  int    `query:"trSerial"`
-	ComputerName string `query:"computer"`
+	StoreCode    int     `query:"store"`
+	TransSerial  int     `query:"trSerial"`
+	ComputerName string  `query:"computer"`
+	IsClosed     bool    `query:"IsClosed"`
+	FromDate     *string `query:"FromDate"`
+	ToDate       *string `query:"ToDate"`
 }

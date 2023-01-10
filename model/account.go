@@ -19,5 +19,6 @@ type Account struct {
 	Serial       int
 	AccountCode  int
 	AccountName  string
+	Trn          string
 	RaseedBefore float64
 }

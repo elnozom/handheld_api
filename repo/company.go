@@ -19,6 +19,7 @@ func NewCompanyRepo(db *gorm.DB) CompanyRepo {
 func (ur *CompanyRepo) Find() (*model.CompanyInfo, error) {
 	var resp model.CompanyInfo
 	err := ur.db.Raw("EXEC CompanyInfoFind").Row().Scan(
+		&resp.CurChrc,
 		&resp.ReportTitle,
 		&resp.BonMsg1,
 		&resp.BonMsg2,

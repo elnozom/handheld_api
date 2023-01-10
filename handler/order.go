@@ -54,7 +54,15 @@ func (h *Handler) DirectOrdersList(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, "ERROR binding request")
 	}
-	rows, err := h.db.Raw("EXEC StkTr01List  @TransSerial = ? , @StoreCode = ? , @ComputerName = ?", req.TransSerial, req.StoreCode, req.ComputerName).Rows()
+	var fromDate *string
+	var toDate *string
+	// if *req.FromDate != "null" {
+	// 	fromDate = req.FromDate
+	// }
+	// if *req.ToDate != "null" {
+	// 	toDate = req.ToDate
+	// }
+	rows, err := h.db.Raw("EXEC StkTr01List  @TransSerial = ? , @StoreCode = ? , @ComputerName = ? , @isClosed = ? , @fromDate = ?, @toDate = ?", req.TransSerial, req.StoreCode, req.ComputerName, req.IsClosed, fromDate, toDate).Rows()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -63,11 +71,13 @@ func (h *Handler) DirectOrdersList(c echo.Context) error {
 		var rec model.DirectOrder
 		err := rows.Scan(
 			&rec.Serial,
+			&rec.DocDate,
+			&rec.Discount,
 			&rec.StoreCode,
 			&rec.DocNo,
 			&rec.AccountSerial,
 			&rec.TransSerial,
-			&rec.TotalCash,
+			&rec.Total,
 			&rec.AccountName,
 			&rec.AccountCode,
 		)

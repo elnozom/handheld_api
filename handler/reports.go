@@ -452,7 +452,7 @@ func (h *Handler) GetAccount(c echo.Context) error {
 
 	for rows.Next() {
 		var account model.Account
-		err = rows.Scan(&account.Serial, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
+		err = rows.Scan(&account.Serial, &account.Trn, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err.Error())
 		}
@@ -461,7 +461,7 @@ func (h *Handler) GetAccount(c echo.Context) error {
 	if rows.NextResultSet() {
 		for rows.Next() {
 			var account model.Account
-			err = rows.Scan(&account.Serial, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
+			err = rows.Scan(&account.Serial, &account.Trn, &account.AccountCode, &account.AccountName, &account.RaseedBefore)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, err.Error())
 			}
@@ -509,7 +509,7 @@ func (h *Handler) GetItem(c echo.Context) error {
 	defer rows.Close()
 	for rows.Next() {
 		var item model.Item
-		err = rows.Scan(&item.Serial, &item.ItemName, &item.MinorPerMajor, &item.POSPP, &item.POSTP, &item.ByWeight, &item.WithExp, &item.ItemHasAntherUnit, &item.AvrWait, &item.Expirey, &item.I, &item.R)
+		err = rows.Scan(&item.Serial, &item.ItemName, &item.MinorPerMajor, &item.POSPP, &item.POSTP, &item.ByWeight, &item.WithExp, &item.ItemHasAntherUnit, &item.AvrWait, &item.Expirey, &item.I, &item.R, &item.LastBuyPrice)
 		if err != nil {
 			fmt.Println("Err2")
 			fmt.Println(err.Error())

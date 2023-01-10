@@ -19,6 +19,7 @@ type Item struct {
 	ItemHasAntherUnit bool
 	AvrWait           float64
 	Expirey           string
+	LastBuyPrice      float64
 }
 type ItemInInvReq struct {
 	ItemSerial int
