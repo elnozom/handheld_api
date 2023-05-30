@@ -56,9 +56,9 @@ func (h *Handler) Register(v1 *echo.Group) {
 	// direct order
 	direct := v1.Group("/direct")
 	direct.POST("", h.DirectOrderInsert)
-	direct.DELETE("/:id", h.DirectOrderItemsDelete)
+	direct.DELETE("/:id/:transSerial", h.DirectOrderItemsDelete)
 	direct.GET("", h.DirectOrdersList)
-	direct.GET("/:id", h.DirectOrderItemsList)
+	direct.GET("/:id/:transSerial", h.DirectOrderItemsList)
 	direct.GET("/print/:id", h.DirectOrderPrintList)
 
 	// product

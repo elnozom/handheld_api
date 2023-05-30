@@ -15,11 +15,13 @@ func (h *Handler) DirectOrderInsert(c echo.Context) error {
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, "ERROR binding request")
 	}
+
 	var resp int
 	err := h.db.Raw(
-		"EXEC StkTr01Insert  @AccountSerial = ?,@EmpCode = ?,@StoreCode = ?,@StoreCode2 = ?, @ComputerName = ?  ,@HeadSerial = ?,@TransSerial = ?,@ItemSerial = ?,@Qnt = ?,@Price =  ?,@Tax = ?,@MinorPerMajor = ?",
+		"EXEC StkTr01Insert  @AccountSerial = ?,@EmpCode = ?,@ItemBarCode = ?,@StoreCode = ?,@StoreCode2 = ?, @ComputerName = ?  ,@HeadSerial = ?,@TransSerial = ?,@ItemSerial = ?,@Qnt = ?,@Price =  ?,@Tax = ?,@MinorPerMajor = ?",
 		req.AccountSerial,
 		req.EmpCode,
+		req.ItemBarCode,
 		req.StoreCode,
 		req.StoreCode2,
 		req.ComputerName,
@@ -41,7 +43,8 @@ func (h *Handler) DirectOrderInsert(c echo.Context) error {
 func (h *Handler) DirectOrderItemsDelete(c echo.Context) error {
 	var resp int
 	serial, _ := strconv.Atoi(c.Param("id"))
-	err := h.db.Raw("EXEC StkTr02Delete  @Serial = ?", serial).Row().Scan(&resp)
+	transSerial, _ := strconv.Atoi(c.Param("transSerial"))
+	err := h.db.Raw("EXEC StkTr02Delete  @Serial = ? , @TransSerial = ? ", serial, transSerial).Row().Scan(&resp)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -142,7 +145,8 @@ func _truncateText(s string, max int) string {
 func (h *Handler) DirectOrderItemsList(c echo.Context) error {
 	var resp []model.DocItem
 	serial, _ := strconv.Atoi(c.Param("id"))
-	rows, err := h.db.Raw("EXEC StkTr01ListItems  @Serial = ?", serial).Rows()
+	transSerial, _ := strconv.Atoi(c.Param("transSerial"))
+	rows, err := h.db.Raw("EXEC StkTr01ListItems  @Serial = ? , @TransSerial = ?  ", serial, transSerial).Rows()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

@@ -30,6 +30,7 @@ type InsertOrderItem struct {
 type InsertDirectOrderReq struct {
 	AccountSerial int
 	RaseedBefore  float64
+	ItemBarCode   int
 	EmpCode       int
 	StoreCode     int
 	StoreCode2    int

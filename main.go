@@ -23,6 +23,6 @@ func main() {
 	}
 	h := handler.NewHandler(db, companyInfo, permissionsRepo, accountsRepo)
 	h.Register(v1)
-	port := fmt.Sprintf(":%s", config.Config("PORT"))
+	port := fmt.Sprintf("192.168.1.40:%s", config.Config("PORT"))
 	r.Logger.Fatal(r.Start(port))
 }
